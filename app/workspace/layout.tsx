@@ -1,14 +1,15 @@
 import React from 'react';
 import AppSidebar from '@/components/custom/workspace/AppSidebar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import NavBar from '@/components/custom/workspace/NavBar';
 
 export default function layout({ children }: { children: React.ReactNode }) {
     return (
-        <div className="flex h-screen bg-gray-50">
+        <div className="flex h-screen">
             <SidebarProvider>
                 <AppSidebar />
-                <main className="flex-1 p-6 overflow-y-auto">
-                    <SidebarTrigger/>
+                <main className="flex-1 overflow-y-auto">
+                    <NavBar/>
                     {children}
                 </main>
             </SidebarProvider>

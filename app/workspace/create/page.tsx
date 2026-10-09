@@ -43,7 +43,7 @@ export default function CreateNewAgentPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 sm:p-12">
+    <div className="min-h-screen p-6 sm:p-12">
       <div className="mx-auto max-w-2xl">
         <h1 className="mb-2 text-3xl font-bold text-gray-900">
           Create New Agent
