@@ -1,7 +1,7 @@
 import React from 'react';
 import AppSidebar from '@/components/custom/workspace/AppSidebar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import NavBar from '@/components/custom/workspace/NavBar';
+import NavBar from '@/components/custom/NavBar';
 
 export default function layout({ children }: { children: React.ReactNode }) {
     return (

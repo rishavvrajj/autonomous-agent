@@ -76,21 +76,21 @@ export default function AppSidebar() {
 
   return (
     <>
-      <Sidebar side="left" collapsible="icon">
+      <Sidebar side="left" collapsible="icon" className="text-neutral-800 dark:text-neutral-200">
         <SidebarHeader className="">
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton
-                tooltip="Rishav Admin"
-                className="justify-start cursor-pointer group-data-[collapsible=icon]:justify-center transition-all duration-300 card"
-              >
-                <Link href="/workspace" className="flex items-center gap-2">
+              <Link href="/workspace" className="flex items-center gap-2">
+                <SidebarMenuButton
+                  tooltip="Rishav Admin"
+                  className="justify-start cursor-pointer group-data-[collapsible=icon]:justify-center transition-all duration-300 card"
+                >
                   <Monitor className="h-4 w-4" />
-                  <span className="group-data-[collapsible=icon]:hidden text-sm font-medium text-gray-900">
+                  <span className="group-data-[collapsible=icon]:hidden text-sm font-medium ">
                     Spotify
                   </span>
-                </Link>
-              </SidebarMenuButton>
+                </SidebarMenuButton>
+              </Link>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarHeader>
@@ -107,17 +107,17 @@ export default function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu className="gap-1">
                 <SidebarMenuItem>
-                  <SidebarMenuButton
-                    tooltip="Create New Agent"
-                    className="justify-start cursor-pointer group-data-[collapsible=icon]:justify-center transition-all duration-300 card"
-                  >
-                    <Link href="/workspace/create" className="flex items-center gap-2">
+                  <Link href="/workspace/create" className="flex items-center gap-2">
+                    <SidebarMenuButton
+                      tooltip="Create New Agent"
+                      className="justify-start cursor-pointer group-data-[collapsible=icon]:justify-center transition-all duration-300 card"
+                    >
                       <Plus className="h-4 w-4" />
-                      <span className="group-data-[collapsible=icon]:hidden text-sm font-medium text-gray-900">
+                      <span className="group-data-[collapsible=icon]:hidden text-sm font-medium ">
                         Create New Agent
                       </span>
-                    </Link>
-                  </SidebarMenuButton>
+                    </SidebarMenuButton>
+                  </Link>
                 </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>
@@ -140,7 +140,7 @@ export default function AppSidebar() {
                       className="justify-start cursor-pointer group-data-[collapsible=icon]:justify-center transition-all duration-300 card"
                     >
                       <User2 className="h-4 w-4" />
-                      <span className="group-data-[collapsible=icon]:hidden text-sm font-medium text-gray-900">
+                      <span className="group-data-[collapsible=icon]:hidden text-sm font-medium ">
                         {agent.name}
                       </span>
                     </SidebarMenuButton>
@@ -191,7 +191,7 @@ export default function AppSidebar() {
                         className="justify-start cursor-pointer group-data-[collapsible=icon]:justify-center transition-all duration-300 card"
                       >
                         {iconElement}
-                        <span className="group-data-[collapsible=icon]:hidden text-sm font-medium text-gray-900">
+                        <span className="group-data-[collapsible=icon]:hidden text-sm font-medium ">
                           {market.name}
                         </span>
                       </SidebarMenuButton>

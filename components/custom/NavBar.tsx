@@ -19,7 +19,6 @@ import {
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { useEffect, useState } from 'react'
 
 export default function NavBar() {
     const pathname = usePathname()
@@ -44,36 +43,8 @@ export default function NavBar() {
         )
     }
 
-    const [systemTheme, setSystemTheme] = useState<"light" | "dark">("light")
-
-    useEffect(() => {
-        const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
-        setSystemTheme(mediaQuery.matches ? "dark" : "light")
-
-        const handleClick = (e: MediaQueryListEvent) => {
-            setSystemTheme(mediaQuery.matches ? "dark" : "light")
-        }
-
-        mediaQuery.addEventListener("change", handleClick)
-
-        return () => mediaQuery.removeEventListener("change", handleClick)
-    }, [])
-
     const SwitchTheme = () => {
-        switch (theme) {
-            case "light": {
-                setTheme("dark")
-                return
-            }
-            case "dark": {
-                setTheme("light")
-                return
-            }
-            case "system": {
-                setTheme(systemTheme === "dark" ? "light" : "dark")
-                return
-            }
-        }
+        setTheme(theme === 'dark' ? 'light' : 'dark')
     }
 
     return (
@@ -119,55 +90,41 @@ export default function NavBar() {
             {/* Menu */}
             <div className='flex items-center justify-end space-x-2'>
 
-                {/* Theme Menu */}
-                <DropdownMenu>
-                    <DropdownMenuTrigger
-                        render={<Button variant="outline" size="icon" className="cursor-pointer" />}
-                    >
-                        <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-                        <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-                        <span className="sr-only">Toggle theme</span>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem className="cursor-pointer" onClick={SwitchTheme}>
-                            Light
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer" onClick={SwitchTheme}>
-                            Dark
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer" onClick={SwitchTheme}>
-                            System
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                {/* Theme Switcher */}
+                <div className='flex items-center justify-center p-2 rounded-lg border border-neutral-200 dark:border-neutral-700'>
+                    <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className='top-0 left-0 h-4 w-4 relative items-center justify-center text-neutral-600 dark:text-neutral-400 hover:cursor-pointer hover:rotate-12 transition-transform duration-200'>
+                        <Sun size={16} className='absolute dark:scale-0 dark:rotate-45 inset-0 w-full h-full transition-all duration-300' />
+                        <Moon size={12} className='absolute scale-0 dark:scale-100 inset-0 w-full h-full transition-all duration-300' />
+                    </button>
+                </div>
 
                 {/* User Menu */}
                 <DropdownMenu>
                     <DropdownMenuTrigger
-                        render={<Button variant="outline" size="icon" className="cursor-pointer mr-2" />}
+                        render={<Button variant="outline" size="icon" className="cursor-pointer mr-2 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-700" />}
                     >
                         <Avatar size='sm' className="cursor-pointer">
                             <AvatarImage src="/favicon.png" />
                             <AvatarFallback>CN</AvatarFallback>
                         </Avatar>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent sideOffset={10}>
+                    <DropdownMenuContent sideOffset={10} className='bg-white dark:bg-gray-800 border border-neutral-200 dark:border-neutral-700'>
                         <DropdownMenuGroup>
-                            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
+                            <DropdownMenuLabel className='text-neutral-600 dark:text-neutral-400'>My Account</DropdownMenuLabel>
+                            <DropdownMenuSeparator className='border-neutral-200 dark:border-neutral-700' />
                             <DropdownMenuItem>
-                                <User className='h-[1.2rem] w-[1.2rem] cursor-pointer' />
-                                Profile
+                                <User className='h-[1.2rem] w-[1.2rem] cursor-pointer text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100' />
+                                <span className='ml-2 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100'>Profile</span>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
-                                <Settings className='h-[1.2rem] w-[1.2rem] cursor-pointer' />
-                                Settings
+                                <Settings className='h-[1.2rem] w-[1.2rem] cursor-pointer text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100' />
+                                <span className='ml-2 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100'>Settings</span>
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuGroup>
-                            <DropdownMenuItem variant='destructive'>
-                                <LogOut className='h-[1.2rem] w-[1.2rem] cursor-pointer' />
-                                Logout
+                            <DropdownMenuItem variant='destructive' className='text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700'>
+                                <LogOut className='h-[1.2rem] w-[1.2rem] cursor-pointer text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100' />
+                                <span className='ml-2 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100'>Logout</span>
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                     </DropdownMenuContent>
