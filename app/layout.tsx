@@ -4,11 +4,11 @@ import type { Metadata } from "next";
 
 import { Figtree } from 'next/font/google';
 
-const figtree = Figtree({subsets:['latin']})
+const figtree = Figtree({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: "Next.js Premium Startup Boilerplate",
-  description: "Created using the ultimate interactive Next.js stack generator CLI.",
+  title: "Orbit",
+  description: "AI Agent Workspace Platform",
 };
 
 export default function RootLayout({
@@ -19,7 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body style={{ margin: 0, padding: 0 }} className={figtree.className}>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
