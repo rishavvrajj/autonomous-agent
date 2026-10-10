@@ -14,6 +14,8 @@ export default function CreateNewAgentPage() {
   const [name, setName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
 
+  const [avatarSeed, setAvatarSeed] = useState<string>();
+
   // Generate a random seed for the avatar
   const generateAvatar = (): void => {
     const seed: string = Math.random().toString(36).substring(2, 15);
@@ -25,9 +27,10 @@ export default function CreateNewAgentPage() {
     generateAvatar();
   }, []);
 
-  const handleShuffle = (): void => {
-    generateAvatar();
-  };
+  const handleShuffle = () => {
+    const seed = crypto.randomUUID();
+    setAvatarSeed(seed);
+  }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
@@ -43,26 +46,29 @@ export default function CreateNewAgentPage() {
   };
 
   return (
-    <div className="min-h-screen p-6 sm:p-12">
+    <div className="w-full">
       <div className="mx-auto max-w-2xl">
-        <h1 className="mb-2 text-3xl font-bold text-gray-900">
-          Create New Agent
-        </h1>
-        <p className="mb-6 text-gray-600">
-          Set up your AI agent by choosing an avatar, name, and description. You can configure its tools and behavior later.
-        </p>
+
+        <div className='w-full h-full flex flex-col text-center items-center justify-center'>
+          <h1 className="text-xl font-bold text-gray-900">
+            Create New Agent
+          </h1>
+          <p className="max-w-sm text-sm text-gray-600">
+            Set up your AI agent by choosing an avatar, name, and description. You can configure its tools and behavior later.
+          </p>
+        </div>
 
         {/* Avatar Section */}
-        <div className="mb-8 text-center">
+        <div className="py-4 w-full mx-auto flex flex-col items-center ">
           <img
-            src={avatarUrl}
-            alt="Agent avatar"
-            className="h-48 w-48 object-contain rounded-lg border border-gray-200"
+            src={`https://api.dicebear.com/10.x/gaze/svg?tags=animation&seed=${avatarSeed}`}
+            className='h-32 w-32'
+            alt="avatar"
           />
-          <div className="mt-4">
+          <div>
             <button
               onClick={handleShuffle}
-              className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="inline-flex items-center p-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none cursor-pointer"
             >
               <Shuffle className="mr-2 h-4 w-4" />
               Shuffle Image
