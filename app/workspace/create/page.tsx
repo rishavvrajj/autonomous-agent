@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 
 function buildAvatarUrl(seed: string) {
-  return `https://api.dicebear.com/10.x/gaze/svg?tags=animation&seed=${seed}`;
+  return `https://api.dicebear.com/10.x/fun-emoji/svg?tags=animation&seed=${seed}`;
 }
 
 export default function CreateNewAgentPage() {
@@ -68,34 +68,36 @@ export default function CreateNewAgentPage() {
 
   return (
     <div className="w-full">
-      <div className="mx-auto max-w-2xl space-y-6">
+      <div className="mx-auto max-w-2xl w-full py-4">
 
         {/* Header */}
-        <div className="flex flex-col items-center text-center">
-          <h1 className="text-xl font-bold">Create New Agent</h1>
-          <p className="max-w-sm text-sm text-muted-foreground">
+        <div className="flex flex-col items-center text-center space-y-4">
+          <h1 className="text-2xl font-bold text-center">Create New Agent</h1>
+          <p className="max-w-lg text-sm text-muted-foreground text-center">
             Set up your AI agent by choosing an avatar, name, and description.
             You can configure its tools and behavior later.
           </p>
         </div>
 
         {/* Avatar */}
-        <div className="flex flex-col items-center gap-3 py-4">
+        <div className="flex flex-col items-center gap-6 py-4">
           <img
             src={avatarUrl}
             alt="Agent avatar"
-            className="size-32"
+            className="size-48 hover:scale-105 transition-transform duration-200 rounded-lg"
           />
-          <Button type="button" variant="outline" onClick={handleShuffle}>
-            <Shuffle className="mr-2 size-4" />
+          <Button type="button" variant="outline" onClick={handleShuffle} className="w-fit">
+            <Shuffle className="mr-2 size-5" />
             Shuffle Image
           </Button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="space-y-1.5">
-            <Label htmlFor="agent-name">Agent Name</Label>
+        <form onSubmit={handleSubmit} className="space-y-4 w-full">
+          <div className="space-y-2">
+            <Label htmlFor="agent-name" className="text-sm font-medium text-foreground mb-1">
+              Agent Name
+            </Label>
             <Input
               id="agent-name"
               type="text"
@@ -103,32 +105,36 @@ export default function CreateNewAgentPage() {
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Research Assistant"
               required
+              className="h-12"
             />
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="agent-description">Agent Description</Label>
+          <div className="space-y-2">
+            <Label htmlFor="agent-description" className="text-sm font-medium text-foreground mb-1">
+              Agent Description
+            </Label>
             <Textarea
               id="agent-description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe what this agent will help you with..."
-              rows={4}
+              rows={5}
+              className="min-h-[96px] resize-y"
             />
           </div>
 
           {error && (
-            <p role="alert" className="text-sm text-destructive">
+            <p role="alert" className="mt-2 text-sm text-destructive w-full">
               {error}
             </p>
           )}
 
-          <div className="flex justify-end gap-3">
-            <Button type="button" variant="outline" onClick={handleClear}>
+          <div className="mt-6 flex justify-end gap-3 w-full">
+            <Button type="button" variant="outline" onClick={handleClear} className="h-12 w-fit">
               Clear
             </Button>
-            <Button type="submit" disabled={!canSubmit}>
-              {loading && <Spinner className="mr-2" />}
+            <Button type="submit" disabled={!canSubmit} className="h-12 w-fit">
+              {loading && <Spinner className="mr-2 h-4 w-4" />}
               {loading ? 'Creating...' : 'Create Agent'}
             </Button>
           </div>

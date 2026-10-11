@@ -1,5 +1,6 @@
-import * as React from "react";
-import { ChevronUp, Monitor, Plus, Settings, ShoppingBag, User2 } from "lucide-react";
+'use client'
+
+import { ChevronUp } from "lucide-react";
 
 import {
   Sidebar,
@@ -16,20 +17,47 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { AgentConfigType } from "@/types/AgentConfig";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function AppSidebar() {
-  // Placeholder agent data
-  const placeholderAgents = [
-    { id: 1, name: "Agent Alpha", image: "/placeholder-agent-1.jpg" },
-    { id: 2, name: "Agent Beta", image: "/placeholder-agent-2.jpg" },
-    { id: 3, name: "Agent Gamma", image: "/placeholder-agent-3.jpg" },
-  ];
+
+  const [agent, setAgent] = useState<AgentConfigType[]>([]);
+
+  const GetUserAgent = async () => {
+    try {
+      const result = await axios.get("/api/agent-config");
+      setAgent(result.data.agentConfig);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error(
+          "Failed to fetch agent config:",
+          error.response?.status,
+          error.config?.url
+        );
+      } else {
+        console.error(error);
+      }
+    }
+  };
+
+  const path = usePathname();
+
+  useEffect(() => {
+    GetUserAgent();
+  }, [path]);
+
+  const session = useSession();
+  const userImage = session.data?.user?.image
 
   const MarketplaceAgent = [
     {
       id: "research-agent",
       name: "Research Agent",
-      image: "/agents/research.png",
+      image: `https://api.dicebear.com/10.x/gaze/svg?tags=animation&seed=${crypto.randomUUID()}`,
       description: "Researches a topic and summarizes reliable sources.",
       category: "Research",
       rating: 4.9,
@@ -38,7 +66,7 @@ export default function AppSidebar() {
     {
       id: "workflow-agent",
       name: "Workflow Agent",
-      image: "/agents/workflow.png",
+      image: `https://api.dicebear.com/10.x/gaze/svg?tags=animation&seed=${crypto.randomUUID()}`,
       description: "Automates repetitive tasks across your workflows.",
       category: "Automation",
       rating: 4.8,
@@ -47,7 +75,7 @@ export default function AppSidebar() {
     {
       id: "support-agent",
       name: "Support Agent",
-      image: "/agents/support.png",
+      image: `https://api.dicebear.com/10.x/gaze/svg?tags=animation&seed=${crypto.randomUUID()}`,
       description: "Drafts helpful replies to common customer questions.",
       category: "Customer support",
       rating: 4.7,
@@ -56,7 +84,7 @@ export default function AppSidebar() {
     {
       id: "data-analyst",
       name: "Data Analyst",
-      image: "/agents/analytics.png",
+      image: `https://api.dicebear.com/10.x/gaze/svg?tags=animation&seed=${crypto.randomUUID()}`,
       description: "Explores datasets and turns findings into clear summaries.",
       category: "Analytics",
       rating: 4.9,
@@ -65,7 +93,7 @@ export default function AppSidebar() {
     {
       id: "content-agent",
       name: "Content Agent",
-      image: "/agents/content.png",
+      image: `https://api.dicebear.com/10.x/gaze/svg?tags=animation&seed=${crypto.randomUUID()}`,
       description: "Creates and refines content from your notes and briefs.",
       category: "Content",
       rating: 4.6,
@@ -84,9 +112,9 @@ export default function AppSidebar() {
                   tooltip="Rishav Admin"
                   className="justify-start cursor-pointer group-data-[collapsible=icon]:justify-center transition-all duration-300 card"
                 >
-                  <Monitor className="h-4 w-4" />
+                  <img src={`https://api.dicebear.com/10.x/fun-emoji/svg?backgroundColor=ffe3ea,e3edff,e2f5e9,fdf1d4,efe6ff&seed=${crypto.randomUUID()}`} alt="Workspace" className="h-6 w-6 rounded-sm" />
                   <span className="group-data-[collapsible=icon]:hidden text-sm font-medium ">
-                    Spotify
+                    Elysium
                   </span>
                 </SidebarMenuButton>
               </Link>
@@ -111,7 +139,7 @@ export default function AppSidebar() {
                       tooltip="Create New Agent"
                       className="justify-start cursor-pointer group-data-[collapsible=icon]:justify-center transition-all duration-300 card"
                     >
-                      <Plus className="h-4 w-4" />
+                      <img src={`https://api.dicebear.com/10.x/gaze/svg?tags=animation&seed=${crypto.randomUUID()}`} alt="Create" className="h-6 w-6 rounded-sm" />
                       <span className="group-data-[collapsible=icon]:hidden text-sm font-medium ">
                         Create New Agent
                       </span>
@@ -133,16 +161,18 @@ export default function AppSidebar() {
 
             <SidebarGroupContent>
               <SidebarMenu className="gap-1">
-                {placeholderAgents.map((agent) => (
-                  <SidebarMenuItem key={agent.id}>
-                    <SidebarMenuButton
-                      className="justify-start cursor-pointer group-data-[collapsible=icon]:justify-center transition-all duration-300 card"
-                    >
-                      <User2 className="h-4 w-4" />
-                      <span className="group-data-[collapsible=icon]:hidden text-sm font-medium ">
-                        {agent.name}
-                      </span>
-                    </SidebarMenuButton>
+                {(agent ?? []).map((agentItem) => (
+                  <SidebarMenuItem key={agentItem.agentId}>
+                    <Link href={`/workspace/${agentItem.name}`} >
+                      <SidebarMenuButton
+                        className="justify-start cursor-pointer group-data-[collapsible=icon]:justify-center transition-all duration-300 card"
+                      >
+                        <img src={agentItem.agentImage} alt={`${agentItem.name} avatar`} className="h-6 w-6 rounded-sm" />
+                        <span className="group-data-[collapsible=icon]:hidden text-sm font-medium ">
+                          {agentItem.name}
+                        </span>
+                      </SidebarMenuButton>
+                    </Link>
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>
@@ -162,34 +192,12 @@ export default function AppSidebar() {
 
               <SidebarMenu className="gap-1">
                 {MarketplaceAgent.map((market) => {
-                  // Choose appropriate icon based on category
-                  let iconElement;
-                  switch (market.category) {
-                    case "Research":
-                      iconElement = <Monitor className="h-4 w-4" />;
-                      break;
-                    case "Automation":
-                      iconElement = <Plus className="h-4 w-4" />;
-                      break;
-                    case "Customer support":
-                      iconElement = <Settings className="h-4 w-4" />;
-                      break;
-                    case "Analytics":
-                      iconElement = <Monitor className="h-4 w-4" />;
-                      break;
-                    case "Content":
-                      iconElement = <Settings className="h-4 w-4" />;
-                      break;
-                    default:
-                      iconElement = <User2 className="h-4 w-4" />;
-                  }
-
                   return (
                     <SidebarMenuItem key={market.id}>
                       <SidebarMenuButton
                         className="justify-start cursor-pointer group-data-[collapsible=icon]:justify-center transition-all duration-300 card"
                       >
-                        {iconElement}
+                        <img src={market.image} alt={`${market.name} icon`} className="h-6 w-6 rounded-sm" />
                         <span className="group-data-[collapsible=icon]:hidden text-sm font-medium ">
                           {market.name}
                         </span>
@@ -213,7 +221,7 @@ export default function AppSidebar() {
                       tooltip="Rishav's account"
                       className="justify-start cursor-pointer group-data-[collapsible=icon]:justify-center transition-all duration-300 card"
                     >
-                      <User2 className="size-4" />
+                      <img src={userImage ?? `https://api.dicebear.com/10.x/fun-emoji/svg?tags=animation&seed=${crypto.randomUUID()}`} alt="Profile" className="size-6 rounded-sm" />
 
                       <span className="group-data-[collapsible=icon]:hidden">
                         Rishav
@@ -226,12 +234,12 @@ export default function AppSidebar() {
 
                 <DropdownMenuContent side="top" align="start">
                   <DropdownMenuItem className={'cursor-pointer transition-all duration-300 card'}>
-                    <User2 className="mr-2 size-4" />
+                    <img src={`https://api.dicebear.com/10.x/gaze/svg?tags=animation&seed=${crypto.randomUUID()}`} alt="Profile" className="mr-2 size-4 rounded-sm" />
                     Profile
                   </DropdownMenuItem>
 
                   <DropdownMenuItem className={'cursor-pointer transition-all duration-300 card'}>
-                    <Settings className="mr-2 size-4" />
+                    <img src={`https://api.dicebear.com/10.x/fun-emoji/svg?seed=settings`} alt="Settings" className="mr-2 size-4 rounded-sm" />
                     Settings
                   </DropdownMenuItem>
 

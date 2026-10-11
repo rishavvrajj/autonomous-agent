@@ -19,6 +19,7 @@ import {
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { useSession } from 'next-auth/react'
 
 export default function NavBar() {
     const pathname = usePathname()
@@ -46,6 +47,10 @@ export default function NavBar() {
     const SwitchTheme = () => {
         setTheme(theme === 'dark' ? 'light' : 'dark')
     }
+
+    const session = useSession();
+
+    const userImage = session.data?.user?.image
 
     return (
         <nav className='flex items-center justify-between sticky z-10 top-0 px-2 p-1 w-full'>
@@ -92,7 +97,7 @@ export default function NavBar() {
 
                 {/* Theme Switcher */}
                 <div className='flex items-center justify-center p-2 rounded-lg border border-neutral-200 dark:border-neutral-700'>
-                    <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className='top-0 left-0 h-4 w-4 relative items-center justify-center text-neutral-600 dark:text-neutral-400 hover:cursor-pointer hover:rotate-12 transition-transform duration-200'>
+                    <button onClick={SwitchTheme} className='top-0 left-0 h-4 w-4 relative items-center justify-center text-neutral-600 dark:text-neutral-400 hover:cursor-pointer hover:rotate-12 transition-transform duration-200'>
                         <Sun size={16} className='absolute dark:scale-0 dark:rotate-45 inset-0 w-full h-full transition-all duration-300' />
                         <Moon size={12} className='absolute scale-0 dark:scale-100 inset-0 w-full h-full transition-all duration-300' />
                     </button>
@@ -104,7 +109,7 @@ export default function NavBar() {
                         render={<Button variant="outline" size="icon" className="cursor-pointer mr-2 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-700" />}
                     >
                         <Avatar size='sm' className="cursor-pointer">
-                            <AvatarImage src="/favicon.png" />
+                            <AvatarImage src={userImage ?? undefined} />
                             <AvatarFallback>CN</AvatarFallback>
                         </Avatar>
                     </DropdownMenuTrigger>
