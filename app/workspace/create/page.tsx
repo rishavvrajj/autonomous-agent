@@ -1,130 +1,139 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Shuffle } from 'lucide-react';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Spinner } from '@/components/ui/spinner';
 
-interface AgentCreatePayload {
-  name: string;
-  description: string;
-  avatarUrl: string;
+function buildAvatarUrl(seed: string) {
+  return `https://api.dicebear.com/10.x/gaze/svg?tags=animation&seed=${seed}`;
 }
 
 export default function CreateNewAgentPage() {
-  const [avatarUrl, setAvatarUrl] = useState<string>('');
-  const [name, setName] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
+  const router = useRouter();
 
-  const [avatarSeed, setAvatarSeed] = useState<string>();
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [avatarSeed, setAvatarSeed] = useState(crypto.randomUUID());
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Generate a random seed for the avatar
-  const generateAvatar = (): void => {
-    const seed: string = Math.random().toString(36).substring(2, 15);
-    setAvatarUrl(`https://avatars.dicebear.com/api/avataaars/${seed}.svg`);
-  };
-
-  // Initialize with a random avatar
-  React.useEffect((): void => {
-    generateAvatar();
-  }, []);
+  // Derived — no need to store in state, always in sync with avatarSeed
+  const avatarUrl = buildAvatarUrl(avatarSeed);
+  const canSubmit = name.trim().length > 0 && !loading;
 
   const handleShuffle = () => {
-    const seed = crypto.randomUUID();
-    setAvatarSeed(seed);
-  }
+    setAvatarSeed(crypto.randomUUID());
+  };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
-    e.preventDefault();
-    // Here we would typically send the data to an API to create the agent.
-    // For now, we'll just log and reset the form or show a success message.
-    const agentData: AgentCreatePayload = { name, description, avatarUrl };
-    console.log('Creating agent:', agentData);
-    // Reset the form and show an alert for now.
-    alert('Agent created successfully!');
+  const handleClear = () => {
     setName('');
     setDescription('');
-    generateAvatar(); // Get a new avatar for next time
+    setError(null);
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError(null);
+
+    if (!name.trim()) return;
+
+    setLoading(true);
+
+    try {
+      const { data } = await axios.post('/api/agent', {
+        agentId: avatarSeed,
+        name: name.trim(),
+        description: description.trim(),
+        agentImage: avatarUrl,
+      });
+
+      console.log('Agent created:', data);
+      router.push(`/workspace/${name}`);
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.error ?? err.message);
+      } else {
+        setError('Something went wrong. Please try again.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="w-full">
-      <div className="mx-auto max-w-2xl">
+      <div className="mx-auto max-w-2xl space-y-6">
 
-        <div className='w-full h-full flex flex-col text-center items-center justify-center'>
-          <h1 className="text-xl font-bold text-gray-900">
-            Create New Agent
-          </h1>
-          <p className="max-w-sm text-sm text-gray-600">
-            Set up your AI agent by choosing an avatar, name, and description. You can configure its tools and behavior later.
+        {/* Header */}
+        <div className="flex flex-col items-center text-center">
+          <h1 className="text-xl font-bold">Create New Agent</h1>
+          <p className="max-w-sm text-sm text-muted-foreground">
+            Set up your AI agent by choosing an avatar, name, and description.
+            You can configure its tools and behavior later.
           </p>
         </div>
 
-        {/* Avatar Section */}
-        <div className="py-4 w-full mx-auto flex flex-col items-center ">
+        {/* Avatar */}
+        <div className="flex flex-col items-center gap-3 py-4">
           <img
-            src={`https://api.dicebear.com/10.x/gaze/svg?tags=animation&seed=${avatarSeed}`}
-            className='h-32 w-32'
-            alt="avatar"
+            src={avatarUrl}
+            alt="Agent avatar"
+            className="size-32"
           />
-          <div>
-            <button
-              onClick={handleShuffle}
-              className="inline-flex items-center p-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none cursor-pointer"
-            >
-              <Shuffle className="mr-2 h-4 w-4" />
-              Shuffle Image
-            </button>
-          </div>
+          <Button type="button" variant="outline" onClick={handleShuffle}>
+            <Shuffle className="mr-2 size-4" />
+            Shuffle Image
+          </Button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Agent Name
-            </label>
-            <input
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-1.5">
+            <Label htmlFor="agent-name">Agent Name</Label>
+            <Input
+              id="agent-name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Research Assistant"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              required
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Agent Description
-            </label>
-            <textarea
+          <div className="space-y-1.5">
+            <Label htmlFor="agent-description">Agent Description</Label>
+            <Textarea
+              id="agent-description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe what this agent will help you with..."
               rows={4}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             />
           </div>
 
-          <div className="flex justify-end space-x-3">
-            <button
-              type="button"
-              onClick={() => {
-                // Reset the form on cancel
-                setName('');
-                setDescription('');
-                generateAvatar(); // Get a new avatar
-              }}
-              className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-800"
-            >
-              Create Agent
-            </button>
+          {error && (
+            <p role="alert" className="text-sm text-destructive">
+              {error}
+            </p>
+          )}
+
+          <div className="flex justify-end gap-3">
+            <Button type="button" variant="outline" onClick={handleClear}>
+              Clear
+            </Button>
+            <Button type="submit" disabled={!canSubmit}>
+              {loading && <Spinner className="mr-2" />}
+              {loading ? 'Creating...' : 'Create Agent'}
+            </Button>
           </div>
         </form>
+
       </div>
     </div>
   );
