@@ -1,6 +1,6 @@
 'use client'
 
-import { ChevronUp } from "lucide-react";
+import { ChevronUp, PlusIcon, Settings2, User2 } from "lucide-react";
 
 import {
   Sidebar,
@@ -122,11 +122,8 @@ export default function AppSidebar() {
           </SidebarMenu>
         </SidebarHeader>
 
-        <SidebarSeparator />
-
         {/* Create New Agent Button */}
         <SidebarContent className="w-full">
-
           <SidebarGroup>
             <SidebarGroupLabel className="font-bold">
               Create New Agent
@@ -139,7 +136,7 @@ export default function AppSidebar() {
                       tooltip="Create New Agent"
                       className="justify-start cursor-pointer group-data-[collapsible=icon]:justify-center transition-all duration-300 card"
                     >
-                      <img src={`https://api.dicebear.com/10.x/gaze/svg?tags=animation&seed=${crypto.randomUUID()}`} alt="Create" className="h-6 w-6 rounded-sm" />
+                      <PlusIcon/>
                       <span className="group-data-[collapsible=icon]:hidden text-sm font-medium ">
                         Create New Agent
                       </span>
@@ -150,11 +147,9 @@ export default function AppSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
 
-          <SidebarSeparator />
 
           {/* Your Agents Section */}
           <SidebarGroup>
-
             <SidebarGroupLabel className="font-bold">
               Your Agents
             </SidebarGroupLabel>
@@ -177,13 +172,11 @@ export default function AppSidebar() {
                 ))}
               </SidebarMenu>
             </SidebarGroupContent>
-
           </SidebarGroup>
 
-          <SidebarSeparator />
 
           <SidebarGroup>
-
+            
             <SidebarGroupLabel className="font-bold">
               Marketplace
             </SidebarGroupLabel>
@@ -222,7 +215,6 @@ export default function AppSidebar() {
                       className="justify-start cursor-pointer group-data-[collapsible=icon]:justify-center transition-all duration-300 card"
                     >
                       <img src={userImage ?? `https://api.dicebear.com/10.x/fun-emoji/svg?tags=animation&seed=${crypto.randomUUID()}`} alt="Profile" className="size-6 rounded-sm" />
-
                       <span className="group-data-[collapsible=icon]:hidden">
                         Rishav
                       </span>
@@ -234,12 +226,12 @@ export default function AppSidebar() {
 
                 <DropdownMenuContent side="top" align="start">
                   <DropdownMenuItem className={'cursor-pointer transition-all duration-300 card'}>
-                    <img src={`https://api.dicebear.com/10.x/gaze/svg?tags=animation&seed=${crypto.randomUUID()}`} alt="Profile" className="mr-2 size-4 rounded-sm" />
+                    <User2/>
                     Profile
                   </DropdownMenuItem>
 
                   <DropdownMenuItem className={'cursor-pointer transition-all duration-300 card'}>
-                    <img src={`https://api.dicebear.com/10.x/fun-emoji/svg?seed=settings`} alt="Settings" className="mr-2 size-4 rounded-sm" />
+                    <Settings2/>
                     Settings
                   </DropdownMenuItem>
 

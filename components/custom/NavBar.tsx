@@ -22,7 +22,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useSession } from 'next-auth/react'
 
 export default function NavBar() {
-    const pathname = usePathname()
+    const pathname = usePathname();
+    const session = useSession();
+    const userImage = session.data?.user?.image
     const { theme, setTheme } = useTheme();
 
     const segments = pathname.split("/").filter(Boolean)
@@ -48,16 +50,12 @@ export default function NavBar() {
         setTheme(theme === 'dark' ? 'light' : 'dark')
     }
 
-    const session = useSession();
-
-    const userImage = session.data?.user?.image
-
     return (
-        <nav className='flex items-center justify-between sticky z-10 top-0 px-2 p-1 w-full'>
+        <nav className='flex items-center justify-between sticky z-10 top-0 px-2 h-12 w-full'>
 
             {/* Nav */}
-            <div className='flex items-center justify-center'>
-                <SidebarTrigger size={"icon-lg"} />
+            <div className='flex items-center justify-center gap-2'>
+                <SidebarTrigger size={"icon-sm"} />
                 <Breadcrumb>
                     <BreadcrumbList>
                         <BreadcrumbItem>
@@ -109,7 +107,7 @@ export default function NavBar() {
                         render={<Button variant="outline" size="icon" className="cursor-pointer mr-2 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-700" />}
                     >
                         <Avatar size='sm' className="cursor-pointer">
-                            <AvatarImage src={userImage ?? undefined} />
+                            <AvatarImage src={userImage ?? `https://api.dicebear.com/10.x/fun-emoji/svg?tags=animation&seed=${crypto.randomUUID()}`} alt="Profile" className="size-6 rounded-sm" />
                             <AvatarFallback>CN</AvatarFallback>
                         </Avatar>
                     </DropdownMenuTrigger>

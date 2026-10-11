@@ -1,7 +1,6 @@
 import React from 'react';
 import AppSidebar from '@/components/custom/workspace/AppSidebar';
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import NavBar from '@/components/custom/NavBar';
+import { SidebarProvider } from '@/components/ui/sidebar';
 
 export default function layout({ children }: { children: React.ReactNode }) {
     return (
@@ -9,7 +8,6 @@ export default function layout({ children }: { children: React.ReactNode }) {
             <SidebarProvider>
                 <AppSidebar />
                 <main className="flex-1 overflow-y-auto">
-                    <NavBar/>
                     {children}
                 </main>
             </SidebarProvider>

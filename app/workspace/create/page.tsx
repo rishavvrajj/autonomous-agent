@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import NavBar from '@/components/custom/NavBar';
 
 function buildAvatarUrl(seed: string) {
   return `https://api.dicebear.com/10.x/fun-emoji/svg?tags=animation&seed=${seed}`;
@@ -68,6 +69,7 @@ export default function CreateNewAgentPage() {
 
   return (
     <div className="w-full">
+      <NavBar />
       <div className="mx-auto max-w-2xl w-full py-4">
 
         {/* Header */}
