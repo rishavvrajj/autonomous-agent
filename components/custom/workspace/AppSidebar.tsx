@@ -11,7 +11,6 @@ import {
   SidebarMenuItem,
   SidebarGroup,
   SidebarMenuButton,
-  SidebarSeparator,
   SidebarGroupLabel,
   SidebarGroupContent,
 } from "@/components/ui/sidebar";
@@ -24,8 +23,10 @@ import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 export default function AppSidebar() {
-
   const [agent, setAgent] = useState<AgentConfigType[]>([]);
+  const [workspaceAvatarSeed, setWorkspaceAvatarSeed] = useState<string | null>(null);
+  const [userAvatarSeed, setUserAvatarSeed] = useState<string | null>(null);
+  const [marketplaceAgents, setMarketplaceAgents] = useState<Array<any>>([]);
 
   const GetUserAgent = async () => {
     try {
@@ -48,58 +49,66 @@ export default function AppSidebar() {
 
   useEffect(() => {
     GetUserAgent();
+
+    // Generate seeds for avatar images to ensure consistency between server and client
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      setWorkspaceAvatarSeed(crypto.randomUUID());
+      setUserAvatarSeed(crypto.randomUUID());
+
+      // Generate marketplace agent seeds
+      const marketAgents = [
+        {
+          id: "research-agent",
+          name: "Research Agent",
+          seed: crypto.randomUUID(),
+          description: "Researches a topic and summarizes reliable sources.",
+          category: "Research",
+          rating: 4.9,
+          installs: 1280,
+        },
+        {
+          id: "workflow-agent",
+          name: "Workflow Agent",
+          seed: crypto.randomUUID(),
+          description: "Automates repetitive tasks across your workflows.",
+          category: "Automation",
+          rating: 4.8,
+          installs: 940,
+        },
+        {
+          id: "support-agent",
+          name: "Support Agent",
+          seed: crypto.randomUUID(),
+          description: "Drafts helpful replies to common customer questions.",
+          category: "Customer support",
+          rating: 4.7,
+          installs: 760,
+        },
+        {
+          id: "data-analyst",
+          name: "Data Analyst",
+          seed: crypto.randomUUID(),
+          description: "Explores datasets and turns findings into clear summaries.",
+          category: "Analytics",
+          rating: 4.9,
+          installs: 680,
+        },
+        {
+          id: "content-agent",
+          name: "Content Agent",
+          seed: crypto.randomUUID(),
+          description: "Creates and refines content from your notes and briefs.",
+          category: "Content",
+          rating: 4.6,
+          installs: 520,
+        }
+      ];
+      setMarketplaceAgents(marketAgents);
+    }
   }, [path]);
 
   const session = useSession();
   const userImage = session.data?.user?.image
-
-  const MarketplaceAgent = [
-    {
-      id: "research-agent",
-      name: "Research Agent",
-      image: `https://api.dicebear.com/10.x/gaze/svg?tags=animation&seed=${crypto.randomUUID()}`,
-      description: "Researches a topic and summarizes reliable sources.",
-      category: "Research",
-      rating: 4.9,
-      installs: 1280,
-    },
-    {
-      id: "workflow-agent",
-      name: "Workflow Agent",
-      image: `https://api.dicebear.com/10.x/gaze/svg?tags=animation&seed=${crypto.randomUUID()}`,
-      description: "Automates repetitive tasks across your workflows.",
-      category: "Automation",
-      rating: 4.8,
-      installs: 940,
-    },
-    {
-      id: "support-agent",
-      name: "Support Agent",
-      image: `https://api.dicebear.com/10.x/gaze/svg?tags=animation&seed=${crypto.randomUUID()}`,
-      description: "Drafts helpful replies to common customer questions.",
-      category: "Customer support",
-      rating: 4.7,
-      installs: 760,
-    },
-    {
-      id: "data-analyst",
-      name: "Data Analyst",
-      image: `https://api.dicebear.com/10.x/gaze/svg?tags=animation&seed=${crypto.randomUUID()}`,
-      description: "Explores datasets and turns findings into clear summaries.",
-      category: "Analytics",
-      rating: 4.9,
-      installs: 680,
-    },
-    {
-      id: "content-agent",
-      name: "Content Agent",
-      image: `https://api.dicebear.com/10.x/gaze/svg?tags=animation&seed=${crypto.randomUUID()}`,
-      description: "Creates and refines content from your notes and briefs.",
-      category: "Content",
-      rating: 4.6,
-      installs: 520,
-    },
-  ]
 
   return (
     <>
@@ -112,7 +121,11 @@ export default function AppSidebar() {
                   tooltip="Rishav Admin"
                   className="justify-start cursor-pointer group-data-[collapsible=icon]:justify-center transition-all duration-300 card"
                 >
-                  <img src={`https://api.dicebear.com/10.x/fun-emoji/svg?backgroundColor=ffe3ea,e3edff,e2f5e9,fdf1d4,efe6ff&seed=${crypto.randomUUID()}`} alt="Workspace" className="h-6 w-6 rounded-sm" />
+                  {workspaceAvatarSeed ? (
+                    <img src={`https://api.dicebear.com/10.x/fun-emoji/svg?backgroundColor=ffe3ea,e3edff,e2f5e9,fdf1d4,efe6ff&seed=${workspaceAvatarSeed}`} alt="Workspace" className="h-6 w-6 rounded-sm" />
+                  ) : (
+                    <img src="https://api.dicebear.com/10.x/fun-emoji/svg?backgroundColor=ffe3ea,e3edff,e2f5e9,fdf1d4,efe6ff&seed=placeholder" alt="Workspace" className="h-6 w-6 rounded-sm" />
+                  )}
                   <span className="group-data-[collapsible=icon]:hidden text-sm font-medium ">
                     Elysium
                   </span>
@@ -158,11 +171,11 @@ export default function AppSidebar() {
               <SidebarMenu className="gap-1">
                 {(agent ?? []).map((agentItem) => (
                   <SidebarMenuItem key={agentItem.agentId}>
-                    <Link href={`/workspace/${agentItem.name}`} >
+                    <Link href={`/workspace/${agentItem.agentId}`} >
                       <SidebarMenuButton
                         className="justify-start cursor-pointer group-data-[collapsible=icon]:justify-center transition-all duration-300 card"
                       >
-                        <img src={agentItem.agentImage} alt={`${agentItem.name} avatar`} className="h-6 w-6 rounded-sm" />
+                        <img src={agentItem.agentImage} alt={`${agentItem.name}`} className="h-6 w-6 rounded-sm" />
                         <span className="group-data-[collapsible=icon]:hidden text-sm font-medium ">
                           {agentItem.name}
                         </span>
@@ -176,7 +189,7 @@ export default function AppSidebar() {
 
 
           <SidebarGroup>
-            
+
             <SidebarGroupLabel className="font-bold">
               Marketplace
             </SidebarGroupLabel>
@@ -184,13 +197,17 @@ export default function AppSidebar() {
             <SidebarGroupContent>
 
               <SidebarMenu className="gap-1">
-                {MarketplaceAgent.map((market) => {
+                {marketplaceAgents.map((market) => {
                   return (
                     <SidebarMenuItem key={market.id}>
                       <SidebarMenuButton
                         className="justify-start cursor-pointer group-data-[collapsible=icon]:justify-center transition-all duration-300 card"
                       >
-                        <img src={market.image} alt={`${market.name} icon`} className="h-6 w-6 rounded-sm" />
+                        {market.seed ? (
+                          <img src={`https://api.dicebear.com/10.x/gaze/svg?tags=animation&seed=${market.seed}`} alt={`${market.name} icon`} className="h-6 w-6 rounded-sm" />
+                        ) : (
+                          <img src={`https://api.dicebear.com/10.x/gaze/svg?tags=animation&seed=placeholder`} alt={`${market.name} icon`} className="h-6 w-6 rounded-sm" />
+                        )}
                         <span className="group-data-[collapsible=icon]:hidden text-sm font-medium ">
                           {market.name}
                         </span>
@@ -214,7 +231,15 @@ export default function AppSidebar() {
                       tooltip="Rishav's account"
                       className="justify-start cursor-pointer group-data-[collapsible=icon]:justify-center transition-all duration-300 card"
                     >
-                      <img src={userImage ?? `https://api.dicebear.com/10.x/fun-emoji/svg?tags=animation&seed=${crypto.randomUUID()}`} alt="Profile" className="size-6 rounded-sm" />
+                      {userImage ? (
+                        <img src={userImage} alt="Profile" className="size-6 rounded-sm" />
+                      ) : (
+                        userAvatarSeed ? (
+                          <img src={`https://api.dicebear.com/10.x/fun-emoji/svg?tags=animation&seed=${userAvatarSeed}`} alt="Profile" className="size-6 rounded-sm" />
+                        ) : (
+                          <img src="https://api.dicebear.com/10.x/fun-emoji/svg?tags=animation&seed=placeholder" alt="Profile" className="size-6 rounded-sm" />
+                        )
+                      )}
                       <span className="group-data-[collapsible=icon]:hidden">
                         Rishav
                       </span>

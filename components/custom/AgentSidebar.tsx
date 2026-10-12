@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import {
     Sidebar,
     SidebarContent,
@@ -14,9 +14,47 @@ import {
 } from "@/components/ui/sidebar";
 import { Calendar, Loader2, Settings, Shuffle, Slack, User } from 'lucide-react'
 import { Separator } from '../ui/separator';
+import { AgentConfigContext } from '@/context/agentConfig';
+import { toast } from '../ui/toast';
+import axios from 'axios';
+
+function buildAvatarUrl(seed: string) {
+  return `https://api.dicebear.com/10.x/fun-emoji/svg?tags=animation&seed=${seed}`;
+}
 
 export default function AgentSidebar() {
+
+    const { agentConfig, setAgentConfig } = useContext(AgentConfigContext);
+
     const [activeTab, setActiveTab] = useState('settings')
+    const [seed, setSeed] = useState<string | null>(null)
+
+    const handleShuffle = () => {
+        const randomSeed = crypto.randomUUID()
+        const avatarUrl = buildAvatarUrl(randomSeed);
+        setAgentConfig((prevConfig: any)=> ({
+            ...prevConfig,
+            agentImage: avatarUrl,
+        }))
+    }
+    
+  const SaveAgentConfig = async () => {
+
+    toast.add({
+      title: "saving agent configuration",
+      description: "Your agent configuration",
+      type: "info",
+    })
+
+    const result = await axios.put("/api/agent-config", agentConfig)
+    console.log(result.data);
+
+    toast.add({
+      title: "agent configuration saved",
+      description: "Your agent configuration",
+      type: "info",
+    })
+  }
 
     return (
         <Sidebar side="right" className="text-neutral-800 dark:text-neutral-200">
@@ -31,22 +69,29 @@ export default function AgentSidebar() {
                             <div className="flex items-center gap-3 w-full">
                                 <div className="flex shrink-0 items-center justify-center rounded-lg overflow-hidden border border-sidebar-border">
                                     <img
-                                        src={`https://api.dicebear.com/10.x/fun-emoji/svg?backgroundColor=ffe3ea,e3edff,e2f5e9,fdf1d4,efe6ff&seed=${crypto.randomUUID()}`}
+                                        key={agentConfig?.agentImage}
+                                        src={agentConfig?.agentImage}
                                         alt="Agent avatar"
                                         className="h-16 w-16 rounded-lg"
+                                        suppressHydrationWarning
                                     />
                                 </div>
 
                                 <div className="flex flex-col gap-2 min-w-0 flex-1">
                                     <input
                                         type="text"
-                                        className="w-full rounded-md border border-sidebar-border bg-transparent px-2 py-1.5 text-sm outline-none focus-visible:ring-1 focus-visible:ring-sidebar-ring"
-                                        defaultValue="Agent Name"
+                                        className="w-full rounded-md bg-transparent px-2 py-1.5 text-sm outline-none focus-visible:ring-1 focus-visible:ring-sidebar-ring"
+                                        defaultValue={agentConfig?.name}
+                                        onChange={(event) => setAgentConfig((prevConfig:any) => ({
+                                            ...prevConfig,
+                                            name: event.target.value
+                                        }))}
                                     />
 
                                     <div className="flex items-center justify-between gap-2">
                                         <button
                                             type="button"
+                                            onClick={handleShuffle}
                                             className="inline-flex items-center gap-2 cursor-pointer rounded-md bg-sidebar-accent px-2 py-1 text-xs font-medium text-sidebar-accent-foreground hover:bg-sidebar-accent/80"
                                         >
                                             <Shuffle className="size-3" />
@@ -55,6 +100,7 @@ export default function AgentSidebar() {
 
                                         <button
                                             type="button"
+                                            onClick={SaveAgentConfig}
                                             className="rounded-md bg-blue-500 px-3 py-1 text-xs font-medium text-white hover:bg-blue-600"
                                         >
                                             Save
@@ -119,10 +165,8 @@ export default function AgentSidebar() {
                         {activeTab === 'settings' && (
                             <div className="space-y-3 px-2">
                                 <div className="space-y-2">
-                                    <label className="block text-xs font-medium text-gray-700">Agent Description</label>
-                                    <textarea className="border border-gray-300 rounded px-2 py-1 w-full h-12 placeholder-gray-400 text-xs" placeholder="Enter agent description..." />
-                                    <label className="block text-xs font-medium text-gray-700 mt-2">Agent Instructions</label>
-                                    <textarea className="border border-gray-300 rounded px-2 py-1 w-full h-16 placeholder-gray-400 text-xs" placeholder="Enter agent instructions..." />
+                                    <label className="block text-xs font-medium text-gray-700">Description & Instructions</label>
+                                    <textarea className="border border-gray-300 rounded px-2 py-1 w-full h-32 placeholder-gray-400 text-xs" defaultValue={agentConfig?.description} />
                                 </div>
                             </div>
                         )}
